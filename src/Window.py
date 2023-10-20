@@ -1,4 +1,5 @@
 import pygame
+from Sql import Sql
 from Menu import Menu
 from MainMenu import MainMenu
 
@@ -14,6 +15,7 @@ class Window:
 
         Running = True
         menu = MainMenu(self.resolution)
+        sql = Sql()
 
         while Running:
             self.clock.tick(60)
