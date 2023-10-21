@@ -2,11 +2,12 @@ import pygame
 from Sql import Sql
 from Menu import Menu
 from MainMenu import MainMenu
+from ConnectionMenu import ConnectionMenu
 
 class Window:
-    def __init__(self) -> None:
-        pygame.init
-        self.resolution = (1920, 1080)
+    def __init__(self, resolution:tuple) -> None:
+        pygame.init()
+        self.resolution = resolution
         self.screen = pygame.display.set_mode(self.resolution, pygame.RESIZABLE) ##| pygame.FULLSCREEN)
         pygame.display.set_caption(" - PROJECT NSI TERMINALE - ", "")
         self.clock = pygame.time.Clock()
@@ -14,7 +15,7 @@ class Window:
     def run(self):
 
         Running = True
-        menu = MainMenu(self.resolution)
+        menu = ConnectionMenu(self.resolution)
         sql = Sql()
 
         while Running:
@@ -23,6 +24,9 @@ class Window:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     Running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        Running = False
 
     def afficherMenu(self, menu:Menu):
         pass

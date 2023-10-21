@@ -5,7 +5,7 @@ class Sql:
     def __init__(self):
         self.bdd = sqlite3.connect('bdd/bdd_jeu.db')
         self.cursor = self.bdd.cursor()
-        self.joueur = self.connection(input('login : '), input('mot de passe : '))
+        self.joueur = '', ''
 
     def close(self):
         self.cursor.close()
@@ -31,7 +31,7 @@ class Sql:
         if login not in liste_login:
             return self.connection(input('login : '), input('mot de passe : '))
         if self.verification_login_mdp(login, mdp):
-            return True
+            return login, mdp
         return self.connection(input('login : '), input('mot de passe : '))
 
     def verification_login_mdp(self, login:str, mdp:str):
