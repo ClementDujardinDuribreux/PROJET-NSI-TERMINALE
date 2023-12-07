@@ -1,0 +1,4 @@
+RES = (1920, 1080)
+FULLSCREEN = False
+FPS = 60
+KEY = ()

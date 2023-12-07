@@ -1,14 +1,20 @@
-from Button import Button
+import pygame
+from OPTIONS import*
 
 class Menu:
-    def __init__(self, resolution:tuple) -> None:
-        self.res = resolution
-        self.listeButton = []
 
-    def afficher(self):
-        pass
-    
-    def CreateButton(self, pos_x:int, pos_y:int, longueur:int, largeur:int, col:int, txt:str, renvoi:object):
-        button = Button(pos_x, pos_y, longueur, largeur, col, txt, renvoi)
-        self.listeButton.append(button)
-        return None
+    def __init__(self, args:list) -> None:
+        self.display = args[0]
+        self.obj = []
+
+    def update(self, event):
+        retour = []
+        for item in self.obj:
+            retour.append(item.update(event))
+        pygame.display.flip()
+        return retour
+
+    def get_escape(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            return True
+        return False

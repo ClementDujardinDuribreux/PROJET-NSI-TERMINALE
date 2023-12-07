@@ -29,10 +29,10 @@ class Sql:
         for log in logins:
             liste_login.append(log[0])
         if login not in liste_login:
-            return self.connection(input('login : '), input('mot de passe : '))
+            return False #self.connection(input('login : '), input('mot de passe : '))
         if self.verification_login_mdp(login, mdp):
             return login, mdp
-        return self.connection(input('login : '), input('mot de passe : '))
+        return False #self.connection(input('login : '), input('mot de passe : '))
 
     def verification_login_mdp(self, login:str, mdp:str):
         self.cursor.execute("SELECT login, mdp FROM login_mdp_score;")
