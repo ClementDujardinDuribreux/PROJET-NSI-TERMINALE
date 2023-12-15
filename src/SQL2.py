@@ -55,7 +55,7 @@ class Sql:
     get_max_score_all_player = classmethod(get_max_score_all_player)
 
     def get_max_score_all_player2(cls):
-        cls.cursor.execute("SELECT DISTINCT login, score FROM Scores JOIN Joueurs ON Joueurs.id = Scores.id_player ORDER BY score DESC")
+        cls.cursor.execute("SELECT login, MAX(score) FROM Scores JOIN Joueurs ON Joueurs.id = Scores.player_id GROUP BY login ORDER BY score DESC")
         return cls.cursor.fetchall()
 
     get_max_score_all_player2 = classmethod(get_max_score_all_player2)
