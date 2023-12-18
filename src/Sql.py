@@ -2,42 +2,75 @@ import sqlite3
 
 class Sql:
 
-    def __init__(self):
-        self.bdd = sqlite3.connect('bdd/bdd_jeu.db')
-        self.cursor = self.bdd.cursor()
-        self.joueur = '', ''
+    def open(cls):
+        cls.bdd = sqlite3.connect('bdd/bdd_jeu')
+        cls.cursor = cls.bdd.cursor()
 
-    def close(self):
-        self.cursor.close()
-        self.bdd.commit()
-        self.bdd.close()
+    open = classmethod(open)
 
-    def setScore(self, identifiant:int, score:int):
-        self.cursor.execute("UPDATE login_mdp_score SET score = ? WHERE id = ?", (score, identifiant))
+    def connect(cls):
+        login = cls.connection(input('login : '), input('mdp : '))[0]
+        cls.id_player = cls.get_id_player(login)
 
-    def id_joueur(self, login:str, mdp:str):
-        if not self.verification_login_mdp(login, mdp):
-            return False
-        self.cursor.execute("SELECT id FROM login_mdp_score WHERE login = ? AND mdp = ?", (login, mdp))
-        identifiant = self.cursor.fetchall()
+    connect = classmethod(connect)
+
+    def close(cls):
+        cls.cursor.close()
+        cls.bdd.commit()
+        cls.bdd.close()
+
+    def add_player(cls, login:str, password:str):
+        cls.cursor.execute("INSERT INTO Joueurs(login, password) VALUES (?, ?)", (login, password))
+        cls.bdd.commit()
+
+    add_player = classmethod(add_player)
+
+    def set_score(cls, name:str, score:int):
+        cls.cursor.execute("INSERT INTO Scores(id_player, score) VALUES (?, ?)", (cls.get_id_player(name), score))
+        cls.bdd.commit()
+    set_score = classmethod(set_score)
+
+    def get_score(cls):
+        liste_scores = []
+        cls.cursor.execute("SELECT score FROM Scores WHERE id_player = ?", (str(cls.id_player)))
+        scores = cls.cursor.fetchall()
+        for score in scores:
+            liste_scores.append(score[0])
+        return liste_scores
+    get_score = classmethod(get_score)
+
+    def get_max_score(cls):
+        cls.cursor.execute("SELECT MAX(score) FROM Scores WHERE id_player = ?", (str(cls.id_player)))
+        return cls.cursor.fetchall()
+    get_max_score = classmethod(get_max_score)
+
+    def get_max_score_all_player(cls):
+        cls.cursor.execute("SELECT login, MAX(score) FROM Scores JOIN Joueurs ON Joueurs.id = Scores.player_id GROUP BY login ORDER BY score DESC")
+        return cls.cursor.fetchall()
+
+    get_max_score_all_player = classmethod(get_max_score_all_player)
+
+    def get_id_player(cls, login:str):
+        cls.cursor.execute("SELECT id FROM Joueurs WHERE login = ?", (login, ))
+        identifiant = cls.cursor.fetchall()
         return identifiant[0][0]
+    
+    get_id_player = classmethod(get_id_player)
 
-    def connection(self, login:str, mdp:str):
-        self.cursor.execute("SELECT login FROM login_mdp_score")
-        logins = self.cursor.fetchall()
-        liste_login = []
-        for log in logins:
-            liste_login.append(log[0])
-        if login not in liste_login:
-            return False #self.connection(input('login : '), input('mot de passe : '))
-        if self.verification_login_mdp(login, mdp):
-            return login, mdp
-        return False #self.connection(input('login : '), input('mot de passe : '))
+    def connection(cls, login:str, password:str):
+        if cls.verification_login_mdp(login, password):
+            return login, password
+        print(" - Reconnection - ")
+        return cls.connection(input('login : '), input('mot de passe : '))
+    
+    connection = classmethod(connection)
 
-    def verification_login_mdp(self, login:str, mdp:str):
-        self.cursor.execute("SELECT login, mdp FROM login_mdp_score;")
-        login_mdp = self.cursor.fetchall()
-        for personne in login_mdp:
-            if personne[0] == login and personne[1] == mdp:
+    def verification_login_mdp(cls, login:str, password:str):
+        cls.cursor.execute("SELECT login, password FROM Joueurs")
+        login_password = cls.cursor.fetchall()
+        for personne in login_password:
+            if personne[0] == login and personne[1] == password:
                 return True
         return False
+    
+    verification_login_mdp = classmethod(verification_login_mdp)
