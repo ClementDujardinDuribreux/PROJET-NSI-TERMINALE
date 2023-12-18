@@ -34,7 +34,7 @@ class Sql:
         cls.cursor.execute("INSERT INTO Scores(id_player, score) VALUES (?, ?)", (cls.get_id_player(name), score))
         cls.bdd.commit()
 
-    def get_score(cls):
+    def get_scores(cls):
         liste_scores = []
         cls.cursor.execute("SELECT score FROM Scores WHERE id_player = ?", (str(cls.id_player)))
         scores = cls.cursor.fetchall()
@@ -65,7 +65,7 @@ class Sql:
     get_id_player = classmethod(get_id_player)
     add_player = classmethod(add_player)
     set_score = classmethod(set_score)
-    get_score = classmethod(get_score)
+    get_scores = classmethod(get_scores)
     get_max_score = classmethod(get_max_score)
     get_max_score_all_player = classmethod(get_max_score_all_player)
     verification_login_mdp = classmethod(verification_login_mdp)
