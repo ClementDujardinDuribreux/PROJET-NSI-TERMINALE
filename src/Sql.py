@@ -2,24 +2,23 @@ import sqlite3
 
 class Sql:
 
-    def open(cls):
+    connected = False
+
+    def open_bdd(cls):
         cls.bdd = sqlite3.connect('bdd/bdd_jeu')
         cls.cursor = cls.bdd.cursor()
-
-    def close(cls):
+        
+    def close_bdd(cls):
         cls.cursor.close()
         cls.bdd.commit()
         cls.bdd.close()
 
-    def connect(cls):
-        login = cls.connection(input('login : '), input('mdp : '))[0]
-        cls.id_player = cls.get_id_player(login)
-
     def connection(cls, login:str, password:str):
         if cls.verification_login_mdp(login, password):
-            return login, password
-        print(" - Reconnection - ")
-        return cls.connection(input('login : '), input('mot de passe : '))
+            cls.id_player = cls.get_id_player(login)
+            cls.connected = True
+            return True
+        return False
 
     def get_id_player(cls, login:str):
         cls.cursor.execute("SELECT id FROM Joueurs WHERE login = ?", (login, ))
@@ -30,8 +29,8 @@ class Sql:
         cls.cursor.execute("INSERT INTO Joueurs(login, password) VALUES (?, ?)", (login, password))
         cls.bdd.commit()
 
-    def set_score(cls, name:str, score:int):
-        cls.cursor.execute("INSERT INTO Scores(id_player, score) VALUES (?, ?)", (cls.get_id_player(name), score))
+    def set_score(cls, score:int):
+        cls.cursor.execute("INSERT INTO Scores(id_player, score) VALUES (?, ?)", (cls.id_player, score))
         cls.bdd.commit()
 
     def get_scores(cls):
@@ -58,9 +57,8 @@ class Sql:
                 return True
         return False
 
-    open = classmethod(open)
-    close = classmethod(close)
-    connect = classmethod(connect)
+    open_bdd = classmethod(open_bdd)
+    close_bdd = classmethod(close_bdd)
     connection = classmethod(connection)
     get_id_player = classmethod(get_id_player)
     add_player = classmethod(add_player)
